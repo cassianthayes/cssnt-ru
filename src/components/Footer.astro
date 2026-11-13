@@ -1,0 +1,93 @@
+---
+const buttons = [
+    {
+        href: "https://github.com/cassianthayes",
+        src: "/buttons/github.gif",
+        alt: "GitHub",
+    },
+    {
+        href: "https://t.me/cassianthayes",
+        src: "/buttons/telegram.gif",
+        alt: "Telegram",
+    },
+    {
+        href: "https://bsky.app/profile/cassianthayes.bsky.social",
+        src: "/buttons/bluesky.png",
+        alt: "Bluesky",
+    },
+    {
+        href: "https://t.me/meowmeowmeowvpn",
+        src: "/buttons/meowvpn.png",
+        alt: "MeowVPN",
+    },
+    {
+        href: "https://tetopie.lol/",
+        src: "/buttons/tetodev.gif",
+        alt: "Tetodev",
+    },
+    {
+        href: "https://senko.digital/",
+        src: "/buttons/senko-digital.png",
+        alt: "Senko Digital",
+    },
+    {
+        href: "https://www.gnu.org/gnu/linux-and-gnu.html",
+        src: "/buttons/gnu-linux.gif",
+        alt: "GNU/Linux",
+    },
+    {
+        href: "https://www.mozilla.org/firefox/",
+        src: "/buttons/firefox2.gif",
+        alt: "Firefox",
+    },
+    {
+        href: "https://helium.computer/",
+        src: "/buttons/helium.gif",
+        alt: "Helium browser",
+    },
+    { href: "https://astro.build/", src: "/buttons/astro.png", alt: "Astro" },
+    { href: "https://bun.sh/", src: "/buttons/bun.png", alt: "Bun" },
+    {
+        href: "https://cobalt.tools/",
+        src: "/buttons/cobalt.png",
+        alt: "cobalt.tools",
+    },
+    {
+        href: "https://chatgpt.com/",
+        src: "/buttons/chatgpt.png",
+        alt: "ChatGPT",
+    },
+    {
+        href: "https://88x31.datakra.sh/",
+        src: "/buttons/datakrash-generator.png",
+        alt: "88x31 Button Generator by Datakrash",
+    },
+    { href: undefined, src: "/buttons/hatems.jpg", alt: "I hate Microsoft" },
+    { href: undefined, src: "/buttons/nodurevvpn.gif", alt: "No Durev VPN" },
+    { href: undefined, src: "/buttons/saynotoweb3.gif", alt: "Say no to Web3" },
+];
+---
+
+<footer class="mx-auto mt-8 flex max-w-4xl flex-wrap justify-center gap-2 p-4">
+    {buttons.map((button) =>
+        button.href ? (
+            <a href={button.href} target="_blank" rel="noopener noreferrer">
+                <img
+                    src={button.src}
+                    alt={button.alt}
+                    class="[image-rendering:pixelated]"
+                    width="88"
+                    height="31"
+                />
+            </a>
+        ) : (
+            <img
+                src={button.src}
+                alt={button.alt}
+                class="[image-rendering:pixelated]"
+                width="88"
+                height="31"
+            />
+        ),
+    )}
+</footer>
