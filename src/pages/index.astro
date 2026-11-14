@@ -1,7 +1,8 @@
 ---
 import { Font } from "astro:assets";
 import Projects from "../components/Projects.astro";
-import Footer from "../components/Footer.astro";
+import Buttons from "../components/Buttons.astro";
+import Shoutbox from "../components/Shoutbox.astro";
 import "../styles/global.css";
 
 ---
@@ -16,7 +17,10 @@ import "../styles/global.css";
         <Font cssVariable="--font-geist" />
     </head>
     <body>
-        <Projects />
-        <Footer />
+        <main class="mx-auto max-w-4xl px-4 pt-10">
+            <Projects />
+            <Buttons />
+            <Shoutbox />
+        </main>
     </body>
 </html>

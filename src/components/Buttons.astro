@@ -69,7 +69,7 @@ const buttons = [
 ];
 ---
 
-<footer class="mx-auto mt-8 flex max-w-4xl flex-wrap justify-center gap-2 p-4">
+<nav aria-label="Links" class="mt-8 flex flex-wrap justify-center gap-2">
     {buttons.map((button) =>
         button.href ? (
             <a href={button.href} target="_blank" rel="noopener noreferrer">
@@ -91,4 +91,4 @@ const buttons = [
             />
         ),
     )}
-</footer>
+</nav>

@@ -23,20 +23,18 @@ const repositories = [
 ];
 ---
 
-<main class="mx-auto max-w-4xl px-4 pt-10">
-    <div class="grid gap-3 sm:grid-cols-2">
-        {repositories.map((repository) => (
-            <a
-                href={`https://github.com/cassianthayes/${repository.name}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="block text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-            >
-                <h2 class="font-semibold text-white">
-                    {repository.name} <span aria-hidden="true">↗</span>
-                </h2>
-                <p class="text-sm text-zinc-400">{repository.description}</p>
-            </a>
-        ))}
-    </div>
-</main>
+<div class="grid gap-3 sm:grid-cols-2">
+    {repositories.map((repository) => (
+        <a
+            href={`https://github.com/cassianthayes/${repository.name}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="block text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+        >
+            <h2 class="font-semibold text-white">
+                {repository.name} <span aria-hidden="true">↗</span>
+            </h2>
+            <p class="text-sm text-zinc-400">{repository.description}</p>
+        </a>
+    ))}
+</div>
