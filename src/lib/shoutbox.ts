@@ -6,7 +6,15 @@ export interface ShoutboxMessage {
     body: string;
 }
 
-/** Text of the Telegram notification, reused when the notification is updated after review. */
-export function messageText(id: number, message: ShoutboxMessage): string {
-    return `Shoutbox message #${id}\nFrom: ${message.author ?? "anonymous"}\n\n${message.body}`;
+/** Telegram notification text: bold author, the message itself, then its status. */
+export function messageText(message: ShoutboxMessage, status: string): string {
+    return `<b>${escapeHtml(message.author ?? "anonymous")}</b>\n${escapeHtml(message.body)}\n\n${status}`;
+}
+
+/** The notification is sent with parse_mode HTML, so submitted text has to be escaped. */
+function escapeHtml(text: string): string {
+    return text
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
 }

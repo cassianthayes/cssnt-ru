@@ -13,7 +13,8 @@ This is a minimal, dark, single-page personal site at `cssnt.ru`. It displays a 
 - `src/components/Buttons.astro` owns the button list. Each entry specifies an image, alt text, and optionally a link. Buttons without a link render as images only. The list is ordered broadly as social links, sites and tools, then statement buttons.
 - `src/components/Shoutbox.astro` renders the published messages on the server and holds the form. Without JavaScript the form posts to the `submitMessage` action and the page re-renders with the outcome; the small client script only turns that outcome into an alert.
 - `src/actions/index.ts` defines `submitMessage`, which validates the submitted form with Zod, stores a pending row, and sends the Telegram notification.
-- `src/pages/api/telegram.ts` is the webhook behind the Publish/Decline buttons. There is no messages endpoint: the list is part of the page.
+- `src/pages/api/telegram.ts` is the webhook behind the Publish/Decline buttons, and behind the Delete button that a published message keeps, which removes the row outright. There is no messages endpoint: the list is part of the page.
+- The notification is compact HTML: bold author, the message, then its status (Pending, Published, Declined, Deleted). Submitted text is escaped because Telegram parses the message as HTML.
 - `src/lib/` holds the D1 queries (`messages.ts`), the limits and notification text (`shoutbox.ts`), the Telegram API calls (`telegram.ts`), and the pinned repositories (`github.ts`).
 - A published message with a null `created_at` counts as pinned: it renders without a date and sorts above the dated messages, which run newest first. The page shows at most 100.
 - `migrations/` and `wrangler.jsonc` define the D1 database and the Worker bindings. Astro supplies the Worker entrypoint and the asset binding, so the file only holds the name and bindings.

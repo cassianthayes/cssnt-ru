@@ -38,6 +38,8 @@ async function callTelegram<T>(
     return data.result as T;
 }
 
+export type NotificationButton = { text: string; callback_data: string };
+
 /** Sends a pending message to the admin with publish/decline buttons. */
 export async function sendNotification(
     env: Env,
@@ -46,7 +48,8 @@ export async function sendNotification(
 ): Promise<void> {
     await callTelegram(env, "sendMessage", {
         chat_id: env.TELEGRAM_CHAT_ID,
-        text: messageText(id, message),
+        text: messageText(message, "Pending"),
+        parse_mode: "HTML",
         link_preview_options: { is_disabled: true },
         reply_markup: {
             inline_keyboard: [
@@ -59,19 +62,21 @@ export async function sendNotification(
     });
 }
 
-/** Rewrites the notification to show the verdict and drops its buttons. */
+/** Rewrites the notification after review and replaces its buttons. */
 export async function updateNotification(
     env: Env,
     chatId: number,
     messageId: number,
     text: string,
+    keyboard: NotificationButton[][] = [],
 ): Promise<void> {
     await callTelegram(env, "editMessageText", {
         chat_id: chatId,
         message_id: messageId,
         text,
+        parse_mode: "HTML",
         link_preview_options: { is_disabled: true },
-        reply_markup: { inline_keyboard: [] },
+        reply_markup: { inline_keyboard: keyboard },
     });
 }
 
