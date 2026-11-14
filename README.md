@@ -1,3 +1,5 @@
 # cssnt.ru
 
-My own website at [cssnt.ru](https://cssnt.ru).
+My personal website.
+
+[cssnt.ru](https://cssnt.ru).
