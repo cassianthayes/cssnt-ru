@@ -19,7 +19,7 @@ This is a minimal, dark, single-page personal site at `cssnt.ru`. It displays a 
 - A published message with a null `created_at` counts as pinned: it renders without a date and sorts above the dated messages, which run newest first. The page shows at most 100.
 - `migrations/` and `wrangler.jsonc` define the D1 database and the Worker bindings. Astro supplies the Worker entrypoint and the asset binding, so the file only holds the name and bindings.
 - `public/buttons/` contains the button images; add new assets there and reference them by `/buttons/...`. Buttons render at 88×31 with pixelated image rendering.
-- `src/styles/global.css` imports Tailwind CSS and maps the sans font to Geist. `astro.config.mjs` configures Tailwind's Vite plugin and the Geist font, including Latin and Cyrillic subsets.
+- `src/styles/global.css` imports Tailwind CSS and maps the sans font to Inter. `astro.config.mjs` configures Tailwind's Vite plugin and the Inter font, including Latin and Cyrillic subsets.
 
 ## Design and link conventions
 
