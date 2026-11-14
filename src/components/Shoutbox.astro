@@ -38,11 +38,6 @@
             >
                 Send
             </button>
-            <p
-                id="shoutbox-status"
-                role="status"
-                class="text-xs text-zinc-500"
-            ></p>
         </form>
     </div>
 </section>
@@ -57,13 +52,12 @@
     const list = document.querySelector<HTMLOListElement>("#shoutbox-list");
     const empty = document.querySelector<HTMLParagraphElement>("#shoutbox-empty");
     const form = document.querySelector<HTMLFormElement>("#shoutbox-form");
-    const status = document.querySelector<HTMLParagraphElement>("#shoutbox-status");
 
-    if (list && empty && form && status) {
+    if (list && empty && form) {
         void loadMessages(list, empty);
         form.addEventListener("submit", (event) => {
             event.preventDefault();
-            void sendMessage(form, status);
+            void sendMessage(form);
         });
     }
 
@@ -88,15 +82,11 @@
         }
     }
 
-    async function sendMessage(
-        form: HTMLFormElement,
-        status: HTMLParagraphElement,
-    ): Promise<void> {
+    async function sendMessage(form: HTMLFormElement): Promise<void> {
         const button = form.querySelector<HTMLButtonElement>("button[type=submit]");
         const data = new FormData(form);
 
         button?.toggleAttribute("disabled", true);
-        status.textContent = "Sending…";
 
         try {
             const response = await fetch("/api/messages", {
@@ -113,14 +103,14 @@
             } | null;
 
             if (!response.ok) {
-                status.textContent = result?.error ?? "Could not send your message.";
+                alert(result?.error ?? "Could not send your message.");
                 return;
             }
 
             form.reset();
-            status.textContent = "Thanks — your message appears once it is approved.";
+            alert("Thanks — your message appears once it is approved.");
         } catch {
-            status.textContent = "Could not send your message.";
+            alert("Could not send your message.");
         } finally {
             button?.toggleAttribute("disabled", false);
         }
@@ -160,8 +150,11 @@
 
     function createPinnedLabel(): HTMLSpanElement {
         const pinned = document.createElement("span");
-        pinned.className = "text-xs text-zinc-500";
-        pinned.textContent = "pinned";
+        pinned.className = "text-xs";
+        pinned.title = "Pinned";
+        pinned.setAttribute("role", "img");
+        pinned.setAttribute("aria-label", "Pinned");
+        pinned.textContent = "📌";
         return pinned;
     }
 
