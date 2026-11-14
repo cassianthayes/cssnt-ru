@@ -69,14 +69,14 @@ const buttons = [
 ];
 ---
 
-<nav aria-label="Links" class="mt-8 flex flex-wrap justify-center gap-2">
+<nav aria-label="Links" class="mt-10 flex flex-wrap justify-center gap-2">
     {buttons.map((button) =>
         button.href ? (
             <a href={button.href} target="_blank" rel="noopener noreferrer">
                 <img
                     src={button.src}
                     alt={button.alt}
-                    class="[image-rendering:pixelated]"
+                    class="relative inline-block transition-transform duration-150 [image-rendering:pixelated] hover:z-10 hover:scale-150"
                     width="88"
                     height="31"
                 />
@@ -85,7 +85,7 @@ const buttons = [
             <img
                 src={button.src}
                 alt={button.alt}
-                class="[image-rendering:pixelated]"
+                class="relative inline-block transition-transform duration-150 [image-rendering:pixelated] hover:z-10 hover:scale-150"
                 width="88"
                 height="31"
             />

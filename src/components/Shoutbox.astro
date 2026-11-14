@@ -28,52 +28,12 @@ function formatDate(iso: string): string {
 ---
 
 <section aria-label="Shoutbox" class="mt-10">
-    <div class="grid gap-3 sm:grid-cols-2">
-        <div>
-            {
-                messages.length === 0 ? (
-                    <p class="text-sm text-zinc-500">No messages yet.</p>
-                ) : (
-                    <ol class="max-h-80 divide-y divide-zinc-800 overflow-y-auto rounded border border-zinc-800">
-                        {messages.map((message) => (
-                            <li class="px-3 py-2">
-                                <p class="flex items-baseline gap-2">
-                                    <span class="text-sm font-semibold text-white">
-                                        {message.author ?? "anonymous"}
-                                    </span>
-                                    {message.createdAt ? (
-                                        <time
-                                            class="text-xs tabular-nums text-zinc-500"
-                                            datetime={message.createdAt}
-                                        >
-                                            {formatDate(message.createdAt)}
-                                        </time>
-                                    ) : (
-                                        <span
-                                            class="text-xs"
-                                            role="img"
-                                            aria-label="Pinned"
-                                            title="Pinned"
-                                        >
-                                            📌
-                                        </span>
-                                    )}
-                                </p>
-                                <p class="mt-0.5 whitespace-pre-wrap break-words text-sm text-zinc-400">
-                                    {message.body}
-                                </p>
-                            </li>
-                        ))}
-                    </ol>
-                )
-            }
-        </div>
-
+    <div class="grid gap-3 sm:grid-cols-3">
         <form
             id="shoutbox-form"
             method="POST"
             action={actions.submitMessage}
-            class="flex flex-col gap-2"
+            class="flex flex-col gap-2 sm:order-2"
         >
             <input
                 name="author"
@@ -110,6 +70,51 @@ function formatDate(iso: string): string {
                 )
             }
         </form>
+
+        <div class="min-w-0 sm:order-1 sm:col-span-2">
+            {
+                messages.length === 0 ? (
+                    <p class="text-sm text-zinc-500">No messages yet.</p>
+                ) : (
+                    <ol class="max-h-80 divide-y divide-zinc-800 overflow-y-auto rounded border border-zinc-800">
+                        {messages.map((message) => (
+                            <li
+                                class:list={[
+                                    "px-3 py-2",
+                                    message.createdAt === null && "bg-zinc-900/60",
+                                ]}
+                            >
+                                <p class="flex items-baseline gap-2">
+                                    <span class="text-sm font-semibold text-white">
+                                        {message.author ?? "anonymous"}
+                                    </span>
+                                    {message.createdAt ? (
+                                        <time
+                                            class="text-xs tabular-nums text-zinc-500"
+                                            datetime={message.createdAt}
+                                        >
+                                            {formatDate(message.createdAt)}
+                                        </time>
+                                    ) : (
+                                        <span
+                                            class="text-xs"
+                                            role="img"
+                                            aria-label="Pinned"
+                                            title="Pinned"
+                                        >
+                                            📌
+                                        </span>
+                                    )}
+                                </p>
+                                <p class="mt-0.5 whitespace-pre-wrap break-words text-sm text-zinc-400">
+                                    {message.body}
+                                </p>
+                            </li>
+                        ))}
+                    </ol>
+                )
+            }
+        </div>
     </div>
 </section>
 
@@ -136,5 +141,14 @@ function formatDate(iso: string): string {
 
         form.reset();
         alert("Thanks — your message appears once it is approved.");
+    });
+
+    // Ctrl+Enter, or Cmd+Enter on macOS, sends the message from the textarea while
+    // plain Enter still adds a new line.
+    form?.querySelector("textarea")?.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+            event.preventDefault();
+            form.requestSubmit();
+        }
     });
 </script>
