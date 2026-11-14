@@ -41,7 +41,7 @@ Manage the background server with `astro dev stop`, `astro dev status`, and `ast
 
 `astro dev` runs the site in Cloudflare's `workerd` runtime through the adapter, so the routes, the D1 binding, and the pins fetch all work locally. Secrets come from `.dev.vars` (gitignored). Apply migrations to the local database with `bun run db:migrate:local`.
 
-`bun run deploy` builds and uploads the Worker with `wrangler deploy`. There is no Pages project involved any more.
+Deployment is automatic: the `cssnt-ru` Worker is connected to the GitHub repository in Cloudflare, so a push to `main` builds and deploys the site. Do not run `bun run deploy` after landing a change on `main`; that command builds and uploads the Worker with `wrangler deploy` and is only for a manual deploy when the automatic build failed or the code is not on `main`. There is no Pages project involved any more.
 
 Secrets are set with `wrangler secret put <NAME>` in production and come from `.dev.vars` locally:
 
