@@ -1,40 +1,30 @@
 ---
-const repositories = [
-    {
-        name: "usage-widget",
-        description: "Compact OpenCode Go usage widget",
-    },
-    {
-        name: "cssnt-ru",
-        description: "My own website",
-    },
-    {
-        name: "navidrome-gateway",
-        description: "Feed navidrome library from Telegram",
-    },
-    {
-        name: "pico-artnet",
-        description: "Raspberry Pi Pico W Art-Net DMX node",
-    },
-    {
-        name: "tmperm-bot",
-        description: "Legacy management bot for an autoservice",
-    },
-];
+import { env } from "cloudflare:workers";
+import { fetchPinnedRepositories } from "../lib/github";
+
+const repositories = await fetchPinnedRepositories(env.GITHUB_TOKEN);
 ---
 
-<div class="grid gap-3 sm:grid-cols-2">
-    {repositories.map((repository) => (
-        <a
-            href={`https://github.com/cassianthayes/${repository.name}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="block text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-        >
-            <h2 class="font-semibold text-white">
-                {repository.name} <span aria-hidden="true">↗</span>
-            </h2>
-            <p class="text-sm text-zinc-400">{repository.description}</p>
-        </a>
-    ))}
-</div>
+{
+    repositories === null ? (
+        <p class="text-sm text-zinc-500">
+            Pinned projects are unavailable right now.
+        </p>
+    ) : (
+        <div class="grid gap-3 sm:grid-cols-2">
+            {repositories.map((repository) => (
+                <a
+                    href={`https://github.com/cassianthayes/${repository.name}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="block text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                >
+                    <h2 class="font-semibold text-white">
+                        {repository.name} <span aria-hidden="true">↗</span>
+                    </h2>
+                    <p class="text-sm text-zinc-400">{repository.description}</p>
+                </a>
+            ))}
+        </div>
+    )
+}

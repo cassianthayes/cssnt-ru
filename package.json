@@ -6,15 +6,16 @@
     "node": ">=22.23.4"
   },
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
-    "preview": "astro preview",
-    "dev:pages": "bun run build && wrangler pages dev dist",
-    "db:migrate": "wrangler d1 migrations apply cssnt-ru-shoutbox --remote",
-    "db:migrate:local": "wrangler d1 migrations apply cssnt-ru-shoutbox --local",
-    "astro": "astro"
+      "dev": "astro dev",
+      "build": "astro build",
+      "preview": "astro preview",
+      "deploy": "bun run build && wrangler deploy",
+      "db:migrate": "wrangler d1 migrations apply cssnt-ru-shoutbox --remote",
+      "db:migrate:local": "wrangler d1 migrations apply cssnt-ru-shoutbox --local",
+      "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^14.4.8",
     "@tailwindcss/vite": "^4.3.5",
     "astro": "^7.4.11",
     "tailwindcss": "^4.3.5"

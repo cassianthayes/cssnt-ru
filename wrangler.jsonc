@@ -1,0 +1,14 @@
+// Cloudflare Worker configuration. The Astro adapter supplies the entrypoint and
+// the static asset binding; only the project name and bindings live here.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "cssnt-ru",
+  "compatibility_date": "2026-11-14",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "cssnt-ru-shoutbox",
+      "database_id": "440c9b08-55dc-4ba1-8b95-11a6125392ae"
+    }
+  ]
+}

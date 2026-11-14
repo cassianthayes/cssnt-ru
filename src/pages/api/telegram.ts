@@ -1,12 +1,14 @@
-import { messageText } from "../_lib/shoutbox";
+import type { APIRoute } from "astro";
+import { env } from "cloudflare:workers";
+import { messageText } from "../../lib/shoutbox";
 import {
     answerCallbackQuery,
     updateNotification,
     type TelegramUpdate,
-} from "../_lib/telegram";
+} from "../../lib/telegram";
 
 /** Telegram webhook: publishes or declines a message when the admin presses a button. */
-export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
+export const POST: APIRoute = async ({ request }) => {
     if (
         request.headers.get("x-telegram-bot-api-secret-token") !==
         env.TELEGRAM_WEBHOOK_SECRET

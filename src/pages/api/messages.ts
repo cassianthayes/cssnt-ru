@@ -1,5 +1,7 @@
-import { parseMessage } from "../_lib/shoutbox";
-import { sendNotification } from "../_lib/telegram";
+import type { APIRoute } from "astro";
+import { env } from "cloudflare:workers";
+import { parseMessage } from "../../lib/shoutbox";
+import { sendNotification } from "../../lib/telegram";
 
 const RECENT_LIMIT = 100;
 
@@ -20,7 +22,7 @@ function json(data: unknown, status = 200): Response {
 }
 
 /** Published messages: pinned (no date) first, then newest first. */
-export const onRequestGet: PagesFunction<Env> = async ({ env }) => {
+export const GET: APIRoute = async () => {
     const { results } = await env.DB.prepare(
         `SELECT author, body, created_at
          FROM messages
@@ -41,7 +43,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ env }) => {
 };
 
 /** Stores a message as pending and asks the admin to review it through Telegram. */
-export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
+export const POST: APIRoute = async ({ request }) => {
     let payload: unknown;
     try {
         payload = await request.json();

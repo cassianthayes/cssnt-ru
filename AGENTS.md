@@ -1,16 +1,20 @@
 ## Website overview
 
-This is a minimal, dark, single-page personal site at `cssnt.ru`. It displays a compact list of pinned GitHub projects, a block of 88×31 buttons, and a shoutbox. Astro generates the pages as static HTML; a Cloudflare Pages Function serves the shoutbox API, and Cloudflare D1 stores the messages. There is no client-side framework.
+This is a minimal, dark, single-page personal site at `cssnt.ru`. It displays a compact list of pinned GitHub projects, a block of 88×31 buttons, and a shoutbox. Astro renders the page on demand through the Cloudflare adapter and runs as a Worker with static assets; Cloudflare D1 stores the shoutbox messages and a Telegram bot approves them. There is no client-side framework.
+
+## Repository rules
+
+- Never modify `README.md`. It stays as the author's one-line description of the site.
 
 ## Structure and content
 
 - `src/pages/index.astro` defines the HTML document, metadata, font, the page `<main>` container, and the three page components.
-- `src/components/Projects.astro` owns the manually maintained list of pinned repositories for `cassianthayes`. Each entry contains a repository name and description; its link is built from the GitHub username and name. When asked to refresh pins, check the GitHub profile and update this list manually. Do not add API calls or token requirements unless requested.
+- `src/components/Projects.astro` renders the repositories pinned on the `cassianthayes` GitHub profile. `src/lib/github.ts` reads them from the GitHub GraphQL API at request time, caches the answer for an hour, and returns null when the profile cannot be read so the page can say so.
 - `src/components/Buttons.astro` owns the button list. Each entry specifies an image, alt text, and optionally a link. Buttons without a link render as images only. The list is ordered broadly as social links, sites and tools, then statement buttons.
-- `src/components/Shoutbox.astro` owns the shoutbox markup, the published message list, and the client script that talks to `/api/messages`. The list is filled at runtime; the Astro page itself stays static.
-- `functions/api/` holds the Pages Functions: `messages.ts` (`GET` published messages, `POST` a pending one) and `telegram.ts` (webhook for the Publish/Decline buttons). `functions/_lib/` holds validation, the notification text, and the Telegram API calls.
+- `src/components/Shoutbox.astro` owns the shoutbox markup, the published message list, and the client script that talks to `/api/messages`. The list is filled at runtime.
+- `src/pages/api/` holds the routes: `messages.ts` (`GET` published messages, `POST` a pending one) and `telegram.ts` (webhook for the Publish/Decline buttons). `src/lib/` holds validation, the notification text, and the Telegram API calls.
 - A published message with a null `created_at` counts as pinned: it renders without a date and sorts above the dated messages, which run newest first. `GET /api/messages` returns at most 100.
-- `migrations/` and `wrangler.toml` define the D1 database and the Pages project bindings. See `README.md` for the setup steps and the three Telegram secrets.
+- `migrations/` and `wrangler.jsonc` define the D1 database and the Worker bindings. Astro supplies the Worker entrypoint and the asset binding, so the file only holds the name and bindings.
 - `public/buttons/` contains the button images; add new assets there and reference them by `/buttons/...`. Buttons render at 88×31 with pixelated image rendering.
 - `src/styles/global.css` imports Tailwind CSS and maps the sans font to Geist. `astro.config.mjs` configures Tailwind's Vite plugin and the Geist font, including Latin and Cyrillic subsets.
 
@@ -32,7 +36,16 @@ astro dev --background
 
 Manage the background server with `astro dev stop`, `astro dev status`, and `astro dev logs`. The project uses Bun (`bun.lock`); run `bun install` to install dependencies and `bun run build` to validate a production build. Build output is written to `dist/`.
 
-`astro dev` does not run the Pages Functions, so the shoutbox API is missing there. Use `bun run dev:pages` (builds, then `wrangler pages dev dist`) to exercise the API and the D1 binding, and `bun run db:migrate:local` to apply migrations to the local database. Wrangler's dev server needs Node.js; it does not work when started through Bun's own runtime.
+`astro dev` runs the site in Cloudflare's `workerd` runtime through the adapter, so the routes, the D1 binding, and the pins fetch all work locally. Secrets come from `.dev.vars` (gitignored). Apply migrations to the local database with `bun run db:migrate:local`.
+
+`bun run deploy` builds and uploads the Worker with `wrangler deploy`. There is no Pages project involved any more.
+
+Secrets are set with `wrangler secret put <NAME>` in production and come from `.dev.vars` locally:
+
+- `GITHUB_TOKEN` - reads the pinned repositories through the GitHub GraphQL API.
+- `TELEGRAM_BOT_TOKEN` - bot that sends the approval notifications.
+- `TELEGRAM_CHAT_ID` - numeric Telegram user id of the admin; only this id may approve messages.
+- `TELEGRAM_WEBHOOK_SECRET` - random string echoed by Telegram in `X-Telegram-Bot-Api-Secret-Token`.
 
 ## Documentation
 
