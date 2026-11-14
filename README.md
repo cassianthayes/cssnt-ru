@@ -10,6 +10,12 @@ Messages live in Cloudflare D1 and only appear after approval in Telegram. The P
 - `POST /api/messages` stores a pending message and notifies the admin through the bot.
 - `POST /api/telegram` is the webhook behind the Publish and Decline buttons.
 
+A message with no `created_at` is pinned and shown above the dated ones; the list itself shows at most 100 messages. To pin one:
+
+```sh
+bunx wrangler d1 execute cssnt-ru-shoutbox --remote --command "UPDATE messages SET created_at = NULL WHERE id = 3"
+```
+
 ### Setup
 
 1. Create the database and put the printed id into `database_id` in `wrangler.toml`:

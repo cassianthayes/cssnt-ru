@@ -9,6 +9,7 @@ This is a minimal, dark, single-page personal site at `cssnt.ru`. It displays a 
 - `src/components/Buttons.astro` owns the button list. Each entry specifies an image, alt text, and optionally a link. Buttons without a link render as images only. The list is ordered broadly as social links, sites and tools, then statement buttons.
 - `src/components/Shoutbox.astro` owns the shoutbox markup, the published message list, and the client script that talks to `/api/messages`. The list is filled at runtime; the Astro page itself stays static.
 - `functions/api/` holds the Pages Functions: `messages.ts` (`GET` published messages, `POST` a pending one) and `telegram.ts` (webhook for the Publish/Decline buttons). `functions/_lib/` holds validation, the notification text, and the Telegram API calls.
+- A published message with a null `created_at` counts as pinned: it renders without a date and sorts above the dated messages, which run newest first. `GET /api/messages` returns at most 100.
 - `migrations/` and `wrangler.toml` define the D1 database and the Pages project bindings. See `README.md` for the setup steps and the three Telegram secrets.
 - `public/buttons/` contains the button images; add new assets there and reference them by `/buttons/...`. Buttons render at 88×31 with pixelated image rendering.
 - `src/styles/global.css` imports Tailwind CSS and maps the sans font to Geist. `astro.config.mjs` configures Tailwind's Vite plugin and the Geist font, including Latin and Cyrillic subsets.

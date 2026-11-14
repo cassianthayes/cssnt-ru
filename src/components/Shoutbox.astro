@@ -1,9 +1,5 @@
-<section id="shoutbox" aria-labelledby="shoutbox-title" class="mt-10">
-    <h2 id="shoutbox-title" class="text-sm font-semibold text-white">
-        Shoutbox
-    </h2>
-
-    <div class="mt-3 grid gap-3 sm:grid-cols-2">
+<section aria-label="Shoutbox" class="mt-10">
+    <div class="grid gap-3 sm:grid-cols-2">
         <div>
             <p id="shoutbox-empty" class="text-sm text-zinc-500">Loading…</p>
             <ol
@@ -55,7 +51,7 @@
     interface PublishedMessage {
         author: string | null;
         body: string;
-        createdAt: string;
+        createdAt: string | null;
     }
 
     const list = document.querySelector<HTMLOListElement>("#shoutbox-list");
@@ -141,27 +137,40 @@
         author.className = "text-sm font-semibold text-white";
         author.textContent = message.author ?? "anonymous";
 
-        const time = document.createElement("time");
-        time.className = "text-xs text-zinc-500";
-        time.dateTime = message.createdAt;
-        time.textContent = formatDate(message.createdAt);
-
         const body = document.createElement("p");
         body.className = "mt-0.5 whitespace-pre-wrap break-words text-sm text-zinc-400";
         body.textContent = message.body;
 
-        header.append(author, time);
+        header.append(
+            author,
+            message.createdAt ? createTime(message.createdAt) : createPinnedLabel(),
+        );
+
         item.append(header, body);
         return item;
+    }
+
+    function createTime(iso: string): HTMLTimeElement {
+        const time = document.createElement("time");
+        time.className = "text-xs text-zinc-500 tabular-nums";
+        time.dateTime = iso;
+        time.textContent = formatDate(iso);
+        return time;
+    }
+
+    function createPinnedLabel(): HTMLSpanElement {
+        const pinned = document.createElement("span");
+        pinned.className = "text-xs text-zinc-500";
+        pinned.textContent = "pinned";
+        return pinned;
     }
 
     function formatDate(iso: string): string {
         const date = new Date(iso);
         if (Number.isNaN(date.getTime())) return iso;
 
-        return date.toLocaleString(undefined, {
-            dateStyle: "medium",
-            timeStyle: "short",
-        });
+        const pad = (value: number) => String(value).padStart(2, "0");
+
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
     }
 </script>

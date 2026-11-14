@@ -6,7 +6,7 @@ const RECENT_LIMIT = 100;
 interface PublishedRow {
     author: string | null;
     body: string;
-    created_at: string;
+    created_at: string | null;
 }
 
 function json(data: unknown, status = 200): Response {
@@ -19,13 +19,13 @@ function json(data: unknown, status = 200): Response {
     });
 }
 
-/** Published messages, newest first. */
+/** Published messages: pinned (no date) first, then newest first. */
 export const onRequestGet: PagesFunction<Env> = async ({ env }) => {
     const { results } = await env.DB.prepare(
         `SELECT author, body, created_at
          FROM messages
          WHERE status = 'approved'
-         ORDER BY created_at DESC, id DESC
+         ORDER BY created_at IS NULL DESC, created_at DESC, id DESC
          LIMIT ?`,
     )
         .bind(RECENT_LIMIT)
