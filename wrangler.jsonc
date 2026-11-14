@@ -4,6 +4,9 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "cssnt-ru",
   "compatibility_date": "2026-11-14",
+  "workers_dev": true,
+  "preview_urls": false,
+  "routes": [{ "pattern": "cssnt.ru", "custom_domain": true }],
   "d1_databases": [
     {
       "binding": "DB",

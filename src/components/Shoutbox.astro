@@ -1,25 +1,84 @@
+---
+import { actions, isInputError } from "astro:actions";
+import { env } from "cloudflare:workers";
+import { listPublishedMessages } from "../lib/messages";
+import { AUTHOR_MAX_LENGTH, BODY_MAX_LENGTH } from "../lib/shoutbox";
+
+const messages = await listPublishedMessages(env.DB);
+
+// Set when the visitor submitted the form without JavaScript: the page re-renders
+// with the outcome of the action.
+const result = Astro.getActionResult(actions.submitMessage);
+const inputErrors = isInputError(result?.error) ? result.error.fields : {};
+const errorMessage = result?.error
+    ? (inputErrors.body?.[0] ??
+      inputErrors.author?.[0] ??
+      result.error.message ??
+      "Could not send your message.")
+    : null;
+
+function formatDate(iso: string): string {
+    const date = new Date(iso);
+    if (Number.isNaN(date.getTime())) return iso;
+
+    const pad = (value: number) => String(value).padStart(2, "0");
+
+    return `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())} ${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())}`;
+}
+---
+
 <section aria-label="Shoutbox" class="mt-10">
     <div class="grid gap-3 sm:grid-cols-2">
         <div>
-            <p id="shoutbox-empty" class="text-sm text-zinc-500">Loading…</p>
-            <ol
-                id="shoutbox-list"
-                hidden
-                class="max-h-80 divide-y divide-zinc-800 overflow-y-auto rounded border border-zinc-800"
-            >
-            </ol>
+            {
+                messages.length === 0 ? (
+                    <p class="text-sm text-zinc-500">No messages yet.</p>
+                ) : (
+                    <ol class="max-h-80 divide-y divide-zinc-800 overflow-y-auto rounded border border-zinc-800">
+                        {messages.map((message) => (
+                            <li class="px-3 py-2">
+                                <p class="flex items-baseline gap-2">
+                                    <span class="text-sm font-semibold text-white">
+                                        {message.author ?? "anonymous"}
+                                    </span>
+                                    {message.createdAt ? (
+                                        <time
+                                            class="text-xs tabular-nums text-zinc-500"
+                                            datetime={message.createdAt}
+                                        >
+                                            {formatDate(message.createdAt)}
+                                        </time>
+                                    ) : (
+                                        <span
+                                            class="text-xs"
+                                            role="img"
+                                            aria-label="Pinned"
+                                            title="Pinned"
+                                        >
+                                            📌
+                                        </span>
+                                    )}
+                                </p>
+                                <p class="mt-0.5 whitespace-pre-wrap break-words text-sm text-zinc-400">
+                                    {message.body}
+                                </p>
+                            </li>
+                        ))}
+                    </ol>
+                )
+            }
         </div>
 
-        <form id="shoutbox-form" class="flex flex-col gap-2">
-            <noscript>
-                <p class="text-sm text-zinc-500">
-                    The shoutbox needs JavaScript to send messages.
-                </p>
-            </noscript>
+        <form
+            id="shoutbox-form"
+            method="POST"
+            action={actions.submitMessage}
+            class="flex flex-col gap-2"
+        >
             <input
                 name="author"
                 type="text"
-                maxlength="40"
+                maxlength={AUTHOR_MAX_LENGTH}
                 autocomplete="nickname"
                 placeholder="Name (optional)"
                 class="rounded border border-zinc-800 bg-transparent px-2 py-1.5 text-sm text-white placeholder:text-zinc-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
@@ -27,7 +86,7 @@
             <textarea
                 name="body"
                 required
-                maxlength="500"
+                maxlength={BODY_MAX_LENGTH}
                 rows="4"
                 placeholder="Message"
                 class="resize-none rounded border border-zinc-800 bg-transparent px-2 py-1.5 text-sm text-white placeholder:text-zinc-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
@@ -38,132 +97,44 @@
             >
                 Send
             </button>
+            {
+                result && !result.error && (
+                    <p class="text-xs text-zinc-500">
+                        Thanks — your message appears once it is approved.
+                    </p>
+                )
+            }
+            {
+                errorMessage && (
+                    <p class="text-xs text-red-400">{errorMessage}</p>
+                )
+            }
         </form>
     </div>
 </section>
 
 <script>
-    interface PublishedMessage {
-        author: string | null;
-        body: string;
-        createdAt: string | null;
-    }
+    import { actions, isInputError } from "astro:actions";
 
-    const list = document.querySelector<HTMLOListElement>("#shoutbox-list");
-    const empty = document.querySelector<HTMLParagraphElement>("#shoutbox-empty");
     const form = document.querySelector<HTMLFormElement>("#shoutbox-form");
 
-    if (list && empty && form) {
-        void loadMessages(list, empty);
-        form.addEventListener("submit", (event) => {
-            event.preventDefault();
-            void sendMessage(form);
-        });
-    }
+    // Without JavaScript the form posts to the action and the page re-renders with
+    // the outcome. This only turns that outcome into an alert.
+    form?.addEventListener("submit", async (event) => {
+        event.preventDefault();
 
-    async function loadMessages(
-        list: HTMLOListElement,
-        empty: HTMLParagraphElement,
-    ): Promise<void> {
-        try {
-            const response = await fetch("/api/messages");
-            if (!response.ok) throw new Error(String(response.status));
+        const { error } = await actions.submitMessage(new FormData(form));
 
-            const { messages } = (await response.json()) as {
-                messages: PublishedMessage[];
-            };
+        if (error) {
+            const firstInputError = isInputError(error)
+                ? Object.values(error.fields).flat()[0]
+                : undefined;
 
-            list.replaceChildren(...messages.map(createItem));
-            list.hidden = messages.length === 0;
-            empty.hidden = messages.length > 0;
-            empty.textContent = "No messages yet.";
-        } catch {
-            empty.textContent = "Could not load messages.";
+            alert(firstInputError ?? error.message ?? "Could not send your message.");
+            return;
         }
-    }
 
-    async function sendMessage(form: HTMLFormElement): Promise<void> {
-        const button = form.querySelector<HTMLButtonElement>("button[type=submit]");
-        const data = new FormData(form);
-
-        button?.toggleAttribute("disabled", true);
-
-        try {
-            const response = await fetch("/api/messages", {
-                method: "POST",
-                headers: { "content-type": "application/json" },
-                body: JSON.stringify({
-                    author: data.get("author"),
-                    body: data.get("body"),
-                }),
-            });
-
-            const result = (await response.json().catch(() => null)) as {
-                error?: string;
-            } | null;
-
-            if (!response.ok) {
-                alert(result?.error ?? "Could not send your message.");
-                return;
-            }
-
-            form.reset();
-            alert("Thanks — your message appears once it is approved.");
-        } catch {
-            alert("Could not send your message.");
-        } finally {
-            button?.toggleAttribute("disabled", false);
-        }
-    }
-
-    function createItem(message: PublishedMessage): HTMLLIElement {
-        const item = document.createElement("li");
-        item.className = "px-3 py-2";
-
-        const header = document.createElement("p");
-        header.className = "flex items-baseline gap-2";
-
-        const author = document.createElement("span");
-        author.className = "text-sm font-semibold text-white";
-        author.textContent = message.author ?? "anonymous";
-
-        const body = document.createElement("p");
-        body.className = "mt-0.5 whitespace-pre-wrap break-words text-sm text-zinc-400";
-        body.textContent = message.body;
-
-        header.append(
-            author,
-            message.createdAt ? createTime(message.createdAt) : createPinnedLabel(),
-        );
-
-        item.append(header, body);
-        return item;
-    }
-
-    function createTime(iso: string): HTMLTimeElement {
-        const time = document.createElement("time");
-        time.className = "text-xs text-zinc-500 tabular-nums";
-        time.dateTime = iso;
-        time.textContent = formatDate(iso);
-        return time;
-    }
-
-    function createPinnedLabel(): HTMLSpanElement {
-        const pinned = document.createElement("span");
-        pinned.className = "text-xs";
-        pinned.title = "Pinned";
-        pinned.setAttribute("role", "img");
-        pinned.setAttribute("aria-label", "Pinned");
-        pinned.textContent = "📌";
-        return pinned;
-    }
-
-    function formatDate(iso: string): string {
-        const date = new Date(iso);
-        if (Number.isNaN(date.getTime())) return iso;
-
-        const pad = (value: number) => String(value).padStart(2, "0");
-
-        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
-    }
+        form.reset();
+        alert("Thanks — your message appears once it is approved.");
+    });
 </script>

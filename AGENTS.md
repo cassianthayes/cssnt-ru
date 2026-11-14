@@ -11,9 +11,11 @@ This is a minimal, dark, single-page personal site at `cssnt.ru`. It displays a 
 - `src/pages/index.astro` defines the HTML document, metadata, font, the page `<main>` container, and the three page components.
 - `src/components/Projects.astro` renders the repositories pinned on the `cassianthayes` GitHub profile. `src/lib/github.ts` reads them from the GitHub GraphQL API at request time, caches the answer for an hour, and returns null when the profile cannot be read so the page can say so.
 - `src/components/Buttons.astro` owns the button list. Each entry specifies an image, alt text, and optionally a link. Buttons without a link render as images only. The list is ordered broadly as social links, sites and tools, then statement buttons.
-- `src/components/Shoutbox.astro` owns the shoutbox markup, the published message list, and the client script that talks to `/api/messages`. The list is filled at runtime.
-- `src/pages/api/` holds the routes: `messages.ts` (`GET` published messages, `POST` a pending one) and `telegram.ts` (webhook for the Publish/Decline buttons). `src/lib/` holds validation, the notification text, and the Telegram API calls.
-- A published message with a null `created_at` counts as pinned: it renders without a date and sorts above the dated messages, which run newest first. `GET /api/messages` returns at most 100.
+- `src/components/Shoutbox.astro` renders the published messages on the server and holds the form. Without JavaScript the form posts to the `submitMessage` action and the page re-renders with the outcome; the small client script only turns that outcome into an alert.
+- `src/actions/index.ts` defines `submitMessage`, which validates the submitted form with Zod, stores a pending row, and sends the Telegram notification.
+- `src/pages/api/telegram.ts` is the webhook behind the Publish/Decline buttons. There is no messages endpoint: the list is part of the page.
+- `src/lib/` holds the D1 queries (`messages.ts`), the limits and notification text (`shoutbox.ts`), the Telegram API calls (`telegram.ts`), and the pinned repositories (`github.ts`).
+- A published message with a null `created_at` counts as pinned: it renders without a date and sorts above the dated messages, which run newest first. The page shows at most 100.
 - `migrations/` and `wrangler.jsonc` define the D1 database and the Worker bindings. Astro supplies the Worker entrypoint and the asset binding, so the file only holds the name and bindings.
 - `public/buttons/` contains the button images; add new assets there and reference them by `/buttons/...`. Buttons render at 88×31 with pixelated image rendering.
 - `src/styles/global.css` imports Tailwind CSS and maps the sans font to Geist. `astro.config.mjs` configures Tailwind's Vite plugin and the Geist font, including Latin and Cyrillic subsets.
