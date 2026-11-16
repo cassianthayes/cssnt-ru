@@ -10,6 +10,7 @@ This is a minimal, dark, single-page personal site at `cssnt.ru`. It displays a 
 
 - `src/pages/index.astro` defines the HTML document, metadata, font, the page `<main>` container, and the three page components.
 - `src/components/Projects.astro` renders the repositories pinned on the `cassianthayes` GitHub profile. `src/lib/github.ts` reads them from the GitHub GraphQL API at request time, caches the answer for an hour, and returns null when the profile cannot be read so the page can say so.
+- `src/components/SectionHeading.astro` renders the small uppercase heading that opens the projects and shoutbox blocks, so they share one style.
 - `src/components/Buttons.astro` owns the button list. Each entry specifies an image, alt text, and optionally a link. Buttons without a link render as images only. The list is ordered broadly as social links, sites and tools, then statement buttons.
 - `src/components/Shoutbox.astro` renders the published messages on the server and holds the form. Without JavaScript the form posts to the `submitMessage` action and the page re-renders with the outcome; the small client script turns that outcome into an alert, sends on Ctrl+Enter, and fades the bottom of the message list while more messages remain below.
 - `src/actions/index.ts` defines `submitMessage`, which validates the submitted form with Zod, stores a pending row, and sends the Telegram notification.
@@ -24,8 +25,8 @@ This is a minimal, dark, single-page personal site at `cssnt.ru`. It displays a 
 ## Design and link conventions
 
 - Keep the design minimal: a zinc-black background, white text, muted descriptions, and Tailwind utility classes.
-- Projects are compact links in a responsive grid (one column on small screens, two on larger screens), not cards. Do not add a heading, language labels, or extra explanatory text unless requested.
-- Keep the buttons in a `<nav>` below the projects, with spacing between them. The shoutbox sits below the buttons, with the published messages on the left and the form on the right, in a two-column grid that stacks on small screens.
+- Projects are compact links in a responsive grid (one column on small screens, two on larger screens), not cards. Do not add extra explanatory text.
+- The blocks stack in the order projects, shoutbox, buttons. The buttons sit in a centered `<nav>` at the bottom; the shoutbox keeps the published messages on the left and the form on the right, in a two-column grid that stacks on small screens.
 - Links open in a new tab using `target="_blank"` and `rel="noopener noreferrer"`. Preserve meaningful image alt text and visible keyboard focus.
 - Keep content and rendering in their existing Astro components; avoid unnecessary dependencies or client-side JavaScript beyond the shoutbox script.
 

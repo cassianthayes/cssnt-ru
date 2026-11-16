@@ -3,6 +3,7 @@ import { actions, isInputError } from "astro:actions";
 import { env } from "cloudflare:workers";
 import { listPublishedMessages } from "../lib/messages";
 import { AUTHOR_MAX_LENGTH, BODY_MAX_LENGTH } from "../lib/shoutbox";
+import SectionHeading from "./SectionHeading.astro";
 
 const messages = await listPublishedMessages(env.DB);
 
@@ -27,7 +28,9 @@ function formatDate(iso: string): string {
 }
 ---
 
-<section aria-label="Shoutbox" class="mt-10">
+<section aria-labelledby="shoutbox-heading" class="mt-10">
+    <SectionHeading id="shoutbox-heading" label="Shoutbox" />
+
     <div class="grid gap-3 sm:grid-cols-3">
         <form
             id="shoutbox-form"
@@ -79,7 +82,7 @@ function formatDate(iso: string): string {
                     <>
                         <ol
                             id="shoutbox-messages"
-                            class="max-h-80 divide-y divide-zinc-800 overflow-y-auto rounded border border-zinc-800"
+                            class="max-h-128 divide-y divide-zinc-800 overflow-y-auto rounded border border-zinc-800"
                         >
                             {messages.map((message) => (
                                 <li
@@ -121,7 +124,7 @@ function formatDate(iso: string): string {
                         <div
                             aria-hidden="true"
                             data-shoutbox-fade
-                            class="pointer-events-none absolute inset-x-px bottom-px h-16 rounded-b bg-linear-to-t from-zinc-950 to-transparent opacity-0 transition-opacity"
+                            class="pointer-events-none absolute inset-x-px bottom-px h-32 rounded-b bg-linear-to-t from-zinc-950 to-transparent opacity-0 transition-opacity"
                         />
                     </>
                 )
