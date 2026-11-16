@@ -11,7 +11,7 @@ This is a minimal, dark, single-page personal site at `cssnt.ru`. It displays a 
 - `src/pages/index.astro` defines the HTML document, metadata, font, the page `<main>` container, and the three page components.
 - `src/components/Projects.astro` renders the repositories pinned on the `cassianthayes` GitHub profile. `src/lib/github.ts` reads them from the GitHub GraphQL API at request time, caches the answer for an hour, and returns null when the profile cannot be read so the page can say so.
 - `src/components/Buttons.astro` owns the button list. Each entry specifies an image, alt text, and optionally a link. Buttons without a link render as images only. The list is ordered broadly as social links, sites and tools, then statement buttons.
-- `src/components/Shoutbox.astro` renders the published messages on the server and holds the form. Without JavaScript the form posts to the `submitMessage` action and the page re-renders with the outcome; the small client script only turns that outcome into an alert.
+- `src/components/Shoutbox.astro` renders the published messages on the server and holds the form. Without JavaScript the form posts to the `submitMessage` action and the page re-renders with the outcome; the small client script turns that outcome into an alert, sends on Ctrl+Enter, and fades the bottom of the message list while more messages remain below.
 - `src/actions/index.ts` defines `submitMessage`, which validates the submitted form with Zod, stores a pending row, and sends the Telegram notification.
 - `src/pages/api/telegram.ts` is the webhook behind the Publish/Decline buttons, and behind the Delete button that a published message keeps, which removes the row outright. There is no messages endpoint: the list is part of the page.
 - The notification is compact HTML: bold author, the message, then its status (Pending, Published, Declined, Deleted). Submitted text is escaped because Telegram parses the message as HTML.
@@ -39,7 +39,7 @@ astro dev --background
 
 Manage the background server with `astro dev stop`, `astro dev status`, and `astro dev logs`. The project uses Bun (`bun.lock`); run `bun install` to install dependencies and `bun run build` to validate a production build. Build output is written to `dist/`.
 
-`astro dev` runs the site in Cloudflare's `workerd` runtime through the adapter, so the routes, the D1 binding, and the pins fetch all work locally. Secrets come from `.dev.vars` (gitignored). Apply migrations to the local database with `bun run db:migrate:local`.
+`astro dev` runs the site in Cloudflare's `workerd` runtime through the adapter, so the routes, the D1 binding, and the pins fetch all work locally. Secrets come from `.dev.vars` (gitignored). Apply migrations to the local database with `bun run db:migrate:local`, and fill it with sample messages for the shoutbox with `bun run db:seed:local` (re-running it does not duplicate rows).
 
 Deployment is automatic: the `cssnt-ru` Worker is connected to the GitHub repository in Cloudflare, so a push to `main` builds and deploys the site. Do not run `bun run deploy` after landing a change on `main`; that command builds and uploads the Worker with `wrangler deploy` and is only for a manual deploy when the automatic build failed or the code is not on `main`. There is no Pages project involved any more.
 
