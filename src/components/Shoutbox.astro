@@ -22,8 +22,15 @@ function formatDate(iso: string): string {
     if (Number.isNaN(date.getTime())) return iso;
 
     const pad = (value: number) => String(value).padStart(2, "0");
+    const month = date.toLocaleString("en-US", { month: "short", timeZone: "UTC" });
+    const time = `${date.getUTCHours()}:${pad(date.getUTCMinutes())}`;
+    // The year only earns its space once the message is no longer from this one.
+    const year =
+        date.getUTCFullYear() === new Date().getUTCFullYear()
+            ? ""
+            : `, ${date.getUTCFullYear()}`;
 
-    return `${date.getUTCFullYear()}-${pad(date.getUTCMonth() + 1)}-${pad(date.getUTCDate())} ${pad(date.getUTCHours())}:${pad(date.getUTCMinutes())}`;
+    return `${month} ${date.getUTCDate()}${year}, ${time}`;
 }
 ---
 
