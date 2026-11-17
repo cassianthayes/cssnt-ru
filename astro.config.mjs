@@ -5,8 +5,7 @@ import cloudflare from "@astrojs/cloudflare";
 
 // https://astro.build/config
 export default defineConfig({
-  // Pages are rendered on demand so the pinned repositories stay current and the
-  // shoutbox API can read D1 in the same Worker.
+  // Pages are rendered on demand so the pinned repositories stay current.
   output: "server",
   adapter: cloudflare({ imageService: "passthrough" }),
   session: false,

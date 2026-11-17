@@ -4,11 +4,9 @@
 // in `.dev.vars` locally; plain values live in `wrangler.jsonc`.
 declare namespace Cloudflare {
     interface Env {
-        DB: D1Database;
         GITHUB_TOKEN?: string;
         TELEGRAM_BOT_TOKEN: string;
         TELEGRAM_CHAT_ID: string;
-        TELEGRAM_WEBHOOK_SECRET: string;
     }
 }
 
