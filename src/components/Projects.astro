@@ -1,14 +1,11 @@
 ---
 import { env } from "cloudflare:workers";
 import { fetchPinnedRepositories } from "../lib/github";
-import SectionHeading from "./SectionHeading.astro";
 
 const repositories = await fetchPinnedRepositories(env.GITHUB_TOKEN);
 ---
 
-<section aria-labelledby="projects-heading">
-    <SectionHeading id="projects-heading" label="Projects" />
-
+<section aria-label="Projects">
     {
         repositories === null ? (
             <p class="text-sm text-zinc-500">
@@ -21,12 +18,14 @@ const repositories = await fetchPinnedRepositories(env.GITHUB_TOKEN);
                         href={`https://github.com/cassianthayes/${repository.name}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="block text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                        class="group block text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                     >
                         <h3 class="font-semibold text-white">
-                            {repository.name} <span aria-hidden="true">↗</span>
+                            {repository.name}
                         </h3>
-                        <p class="text-sm text-zinc-400">{repository.description}</p>
+                        <p class="text-sm text-zinc-400 group-hover:text-white">
+                            {repository.description}
+                        </p>
                     </a>
                 ))}
             </div>

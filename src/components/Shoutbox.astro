@@ -3,7 +3,6 @@ import { actions, isInputError } from "astro:actions";
 import { env } from "cloudflare:workers";
 import { listPublishedMessages } from "../lib/messages";
 import { AUTHOR_MAX_LENGTH, BODY_MAX_LENGTH } from "../lib/shoutbox";
-import SectionHeading from "./SectionHeading.astro";
 
 const messages = await listPublishedMessages(env.DB);
 
@@ -28,9 +27,7 @@ function formatDate(iso: string): string {
 }
 ---
 
-<section aria-labelledby="shoutbox-heading" class="mt-10">
-    <SectionHeading id="shoutbox-heading" label="Shoutbox" />
-
+<section aria-label="Shoutbox">
     <div class="grid gap-3 sm:grid-cols-3">
         <form
             id="shoutbox-form"
@@ -50,7 +47,7 @@ function formatDate(iso: string): string {
                 name="body"
                 required
                 maxlength={BODY_MAX_LENGTH}
-                rows="4"
+                rows="3"
                 placeholder="Message"
                 class="resize-none rounded border border-zinc-800 bg-transparent px-2 py-1.5 text-sm text-white placeholder:text-zinc-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             ></textarea>
@@ -82,7 +79,7 @@ function formatDate(iso: string): string {
                     <>
                         <ol
                             id="shoutbox-messages"
-                            class="max-h-128 divide-y divide-zinc-800 overflow-y-auto rounded border border-zinc-800"
+                            class="max-h-96 divide-y divide-zinc-800 overflow-y-auto rounded border border-zinc-800"
                         >
                             {messages.map((message) => (
                                 <li
@@ -124,7 +121,7 @@ function formatDate(iso: string): string {
                         <div
                             aria-hidden="true"
                             data-shoutbox-fade
-                            class="pointer-events-none absolute inset-x-px bottom-px h-32 rounded-b bg-linear-to-t from-zinc-950 to-transparent opacity-0 transition-opacity"
+                            class="pointer-events-none absolute inset-x-px bottom-px h-24 rounded-b bg-linear-to-t from-zinc-950 to-transparent opacity-0 transition-opacity"
                         />
                     </>
                 )
