@@ -8,10 +8,10 @@ This is a minimal, dark, single-page personal site at `cssnt.ru`. It displays th
 
 ## Structure and content
 
-- `src/pages/index.astro` defines the HTML document, metadata, font, the page `<main>` container, and the four page components.
-- `src/components/Contacts.astro` is the plain contact block at the top: name, email, and Telegram handle, one line each.
+- `src/pages/index.astro` defines the HTML document, metadata, the Mastodon `rel="me"` verification link, font, the page `<main>` container, and the four page components.
+- `src/components/Contacts.astro` is the plain contact block at the top: name, email, and links to Telegram and Mastodon, one line each.
 - `src/components/Projects.astro` renders the repositories pinned on the `cassianthayes` GitHub profile. `src/lib/github.ts` reads them from the GitHub GraphQL API at request time, caches the answer for an hour, and returns null when the profile cannot be read so the page can say so.
-- `src/components/Buttons.astro` owns the button list. Each entry specifies an image, alt text, and optionally a link. Buttons without a link render as images only. The list is ordered broadly as social links, sites and tools, then statement buttons.
+- `src/components/Buttons.astro` owns the button list. Each entry specifies an image, alt text, and optionally a link. Buttons without a link render as images only. Buttons are grouped by purpose: the sites and communities of the people around the site, the software it is built and run with, the generator behind the images, then the image-only statements.
 - `src/components/Shoutbox.astro` renders the published messages on the server and holds the form. Without JavaScript the form posts to the `submitMessage` action and the page re-renders with the outcome; the small client script turns that outcome into an alert, sends on Ctrl+Enter, and fades the bottom of the message list while more messages remain below.
 - `src/actions/index.ts` defines `submitMessage`, which validates the submitted form with Zod, stores a pending row, and sends the Telegram notification.
 - `src/pages/api/telegram.ts` is the webhook behind the Publish/Decline buttons, and behind the Delete button that a published message keeps, which removes the row outright. There is no messages endpoint: the list is part of the page.

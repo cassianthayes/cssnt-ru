@@ -96,7 +96,7 @@ function formatDate(iso: string): string {
                                     ]}
                                 >
                                     <p class="flex items-baseline gap-2">
-                                        <span class="text-sm font-semibold text-white">
+                                        <span class="text-sm text-zinc-400">
                                             {message.author ?? "anonymous"}
                                         </span>
                                         {message.createdAt ? (
@@ -117,7 +117,7 @@ function formatDate(iso: string): string {
                                             </span>
                                         )}
                                     </p>
-                                    <p class="mt-0.5 whitespace-pre-wrap break-words text-sm text-zinc-400">
+                                    <p class="mt-0.5 whitespace-pre-wrap break-words text-sm text-white">
                                         {message.body}
                                     </p>
                                 </li>
