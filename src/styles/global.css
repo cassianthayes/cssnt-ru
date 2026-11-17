@@ -3,3 +3,9 @@
 @theme inline {
     --font-sans: var(--font-geist);
 }
+
+/* Everything on the page is sized in rem, so this one value scales the text,
+   spacing, and column width together. 112.5% is 18px instead of 16px. */
+html {
+    font-size: 112.5%;
+}
