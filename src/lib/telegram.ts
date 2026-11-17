@@ -1,8 +1,8 @@
-async function callTelegram<T>(
+async function callTelegram(
     env: Env,
     method: string,
     payload: unknown,
-): Promise<T> {
+): Promise<void> {
     const response = await fetch(
         `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/${method}`,
         {
@@ -14,7 +14,6 @@ async function callTelegram<T>(
 
     const data = (await response.json().catch(() => null)) as {
         ok?: boolean;
-        result?: T;
         description?: string;
     } | null;
 
@@ -23,8 +22,6 @@ async function callTelegram<T>(
             `Telegram ${method} failed (${response.status}): ${data?.description ?? "unknown error"}`,
         );
     }
-
-    return data.result as T;
 }
 
 /** Sends the message to the admin, whose chat is the only place it is kept. */
