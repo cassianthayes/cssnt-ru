@@ -29,7 +29,6 @@ export async function sendNotification(env: Env, text: string): Promise<void> {
     await callTelegram(env, "sendMessage", {
         chat_id: env.TELEGRAM_CHAT_ID,
         text,
-        parse_mode: "HTML",
         link_preview_options: { is_disabled: true },
     });
 }

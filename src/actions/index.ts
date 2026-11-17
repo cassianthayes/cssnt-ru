@@ -1,7 +1,7 @@
 import { ActionError, defineAction } from "astro:actions";
 import { z } from "astro/zod";
 import { env } from "cloudflare:workers";
-import { formatNotification, MESSAGE_MAX_LENGTH } from "../lib/message";
+import { MESSAGE_MAX_LENGTH } from "../lib/message";
 import { sendNotification } from "../lib/telegram";
 
 // An empty form input arrives as null, so it is normalised to a trimmed string first.
@@ -22,7 +22,7 @@ export const server = {
         input: z.object({ body }),
         handler: async ({ body }) => {
             try {
-                await sendNotification(env, formatNotification(body));
+                await sendNotification(env, body);
             } catch (error) {
                 console.error("Anonymous message failed", error);
                 throw new ActionError({
